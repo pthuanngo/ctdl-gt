@@ -1,0 +1,107 @@
+///tim x match voi node
+int searchstandfor(AVLNode* &p,AVLNode*&q) // Tìm kiếm giá trị cần xóa
+{
+	int ketqua;
+	if (q->Left != NULL) ///nếu con trỏ đi qua trái khác rỗng thì kết quả sẽ bằng kết quả tìm kiếm ở trái
+	{
+		ketqua = searchstandfor(p, q->Left); // Kết quả bằng giá trị Node q bên trái
+		if (ketqua < 2)
+			return ketqua;   // Nếu giá trị tìm thấy thì trả về 1 còn không tiếp tục tìm kiếm 
+		switch (q->balFactor)  // Xét về giá trị chiều cao cây Node q
+		{
+		case LH:			// Nếu Node q bên  trái lệch cao hơn thì tiếp tục tìm kiếm bên phải
+			q->ballFactor = EH;
+			return 2;
+			case EH :		// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái.
+			q->ballFactor = RH;
+			return 1;
+			case RH :		// Nếu Node q bên phải lệnh cao hơn thì cân bằng lại node q bên phải
+			return balanceRight(q);
+		}
+	}
+	else  // Nếu dò đến lúc hết giá trị
+	{
+		p->Info = q->Info // Giá trị Node p = Giá trị Node q;
+			p = q; // Node p = Node q;
+		q = q->Right;  // Node q sẽ bằng bên phải của Node q;
+	}
+	return 2; // Tiếp tục tìm kiếm.
+}
+///xoa node
+int deleteAVLNode(AVLNode*&T, ItemType x) // Xóa giá trị cần tìm
+{
+	int ketqua;
+	if (T == NULL) // Nếu Cây T rỗng thì trả về không có giá trị
+		return 0;
+	if (T->Info > x) // Nếu Giá trị T lớn hơn giá trị x cần tìm
+	{
+		ketqua = deleteAVLNode(T->Left, x); // Tiếp tục tìm phía bên trái Node T
+		if (ketqua < 2)
+			return ketqua;  // Nếu kết quả nhỏ hơn 2 => trả về giá trị tìm thấy
+		switch (T->ballFactor)
+		{
+		case LH:		// Nếu Node T bên  trái lệch cao hơn thì tiếp tục tìm kiếm bên phải
+			T->ballFactor = EH;
+			return 2;
+		case EH:		// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái						
+			T->ballFactor = RH;
+			return;
+		case RH:		// Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên phải
+			return balanceRight(T);
+
+		}
+	}
+	else if (T->Info < x) // Nếu giá trị node T nhỏ hơn x 
+	{
+		ketqua = deleteAVLNode(T->Right, x); // giá trị kết quả gán tìm kiếm tiếp bên tay phải
+		if (ketqua < 2)
+			return ketqua;	// Nếu kết quả tìm thấy sẽ dừng lại 
+		switch (T->ballFactor)
+		{
+		case RH:	// Nếu Node T bên  phải lệch cao hơn thì tiếp tục tìm kiếm bên phải
+			T->ballFactor = EH;
+			return 2;
+		case EH:	// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái	
+			T->ballFactor = LH;
+			return 1;
+		case LH:	//  Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên trái 
+			return balanceLeft(T);
+		}
+	}
+	else //Nếu không tìm thấy bên phải
+	{
+		if (T->Left == NULL) // Xét điều kiện nếu Node T bên trái bằng Rỗng
+		{
+			T = T->Right; //  Node T = Node T bên phải
+			ketqua = 2; // Trả về kết quả bằng 2
+		}
+		else // Còn nếu không rỗng thì
+		{
+			if (T->Right == NULL) // Xét Điều kiện Node T bên phải bằng Rỗng
+			{
+				T = T->Left; //  Node T = Node T bên trái
+				ketqua = 2; // Trả về kết quả bằng 2
+			}
+			else // Còn nếu ko thấy
+			{
+				ketqua = searchstandfor(p, T->Right); // Xét kết quả tìm kiếm giá trị bên phải
+				if (ketqua < 2)
+					return ketqua; // Nếu kết quả tìm thấy sẽ dừng lại 
+				switch (T->ballFactor)
+				{
+				case RH: // Nếu Node T bên  phải lệch cao hơn thì tiếp tục tìm kiếm bên phải
+					T->ballFactor = EH;
+					return 2;
+				case EH: // Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái
+					T->ballFactor = LH;
+					return 1;
+				case LH: //  Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên trái 
+					return balanceLeft(T);
+				}
+			}
+		}
+		delete p; // Xóa giá trị Node p đó;
+		return ketqua; // Trả về giá trị kết quả để xét điều kiện đã xóa đc hay chưa
+	}
+	return ketqua; // Trả về giá trị kết quả để xét điều kiện đã xóa đc hay chưa 
+}
