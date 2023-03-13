@@ -1,0 +1,80 @@
+void  rotateRL(AVLNode* &T)
+{
+	AVLNode*T1 = T->Right;  // Gán con trỏ T1 vào node T phía bên phải 
+	AVLNode*T2 = T1->Left;  // Gán con trỏ T2 vào node T1 phía bên trái 
+	T1->Left = T2->Right;  // giá trị Node T1 bên trái = Giá trị Node T2 bên phải
+	T2->Right = T1; // Giá trị Node T2 bên phải = Giá trị Node T1
+	T->Right = T2->Left; // Giá trị Node T bên phải = T2 bên trái
+	T2->Left = T; // Giá trị Node T2 bên trái = Giá trị Node T
+	switch (T2->balFactor) //Kiểm tra điều kiện chiều cao T2 
+	{
+	case RH:
+		T->balFactor = LH;
+		T1->balFactor = EH;
+		break;
+	case EH:
+		T->balFactor = EH;
+		T1->balFactor = EH;
+		break;
+	case LH:
+		T->balFactor = EH;
+		T1->balFactor = RH;
+		break;
+	}
+	T2->balFactor = EH; 
+	T = T2; //Giá trị Node T = Giá trị Node T2
+}
+
+void rotateRR(AVLNode*&T)
+{
+	AVLNode*T1 = T->Right; // Gán con trỏ T1 vào node T phía bên phải 
+	T->Right = T1->Left; // Giá trị Node T bên phải = Giá trị T1 bên trái
+	T1->Left = T; //Giá trị T1 bên trái = Giá trị Node T
+	switch (T1->balFactor) //Kiểm tra điều kiện chiều cao T1 
+	{
+	case RH: //cay T1 lech phai
+		T->balFactor = EH;
+		T1->balFactor = EH;
+		break;
+	case EH: //cay T1 can bang
+		T->balFactor = RH;
+		T1->balFactor = LH;
+		break;
+	}
+	T = T1;
+}
+
+int balanceLeft(AVLNode*&T)
+{ //Khi cay T lech ben trai can can bang lai
+	AVLNode*T1 = T->Left; // Gán con trỏ T1 vào node T phía bên trái 
+	switch (T1->balFactor) //Kiểm tra điều kiện chiều cao T1
+	{
+	case LH:
+		rotateLL(T);
+		return 2;
+	case EH:
+		rotateLL(T);
+		return 1;
+	case RH:
+		rotateLR(T);
+		return 2;
+	}
+	return 0; //Thuc hien khong thanh cong
+}
+
+int balanceRight(AVLNode*&T)
+{ //Khi cay T lech ben phai can can bang lai
+	AVLNode*T1 = T->Right; // Gán con trỏ T1 vào node T phía bên phải 
+	switch (T1->balFactor) // Kiểm tra điều kiện chiều cao T1
+	{
+	case LH:
+		rotateRL(T);
+		return 2;
+	case EH:
+		rotateRR(T);
+		return 1;
+	case RH:
+		rotateRR(T);
+		return 2;
+	}
+	return 0; //Thuc hien khong thanh cong
