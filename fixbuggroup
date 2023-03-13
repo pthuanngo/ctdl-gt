@@ -1,0 +1,261 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define LH -1
+#define EH 0
+#define RH 1
+typedef int ItemType;
+
+struct AVLNode
+{
+	int ballFactor;
+	ItemType Info;
+	AVLNode* Left;
+	AVLNode* Right;
+};
+
+struct AVLTree
+{
+	AVLNode* Root;
+};
+
+struct node
+{
+	ItemType Info;
+	struct node* pRight;
+	struct node* pLeft;
+};
+typedef struct node TNode;
+
+// a. trường hợp 1: 
+// cân bằng tại LL
+void rotateLL(AVLNode*& T)
+{
+	AVLNode* T1 = T->Left;
+	T->Left = T1->Right;
+	T1->Right = T;
+	switch (T1->ballFactor)
+	{
+	case LH: // cây T1 lệch trái
+	{
+		T->ballFactor = EH;
+		T1->ballFactor = EH;
+		break;
+	}
+	case EH: // cây T1 cân bằng
+	{
+		T->ballFactor = LH;
+		T1->ballFactor = RH;
+		break;
+	}
+	}
+	T = T1;
+}
+
+// cân bằng tại LR
+void rotateLR(AVLNode*& T)
+{
+	AVLNode* T1 = T->Left;
+	AVLNode* T2 = T1->Right;
+	T1->Right = T2->Left;
+	T2->Left = T1;
+	T->Left = T2->Right;
+	T2->Right = T;
+	switch (T2->ballFactor)
+	{
+	case LH:
+	{
+		T->ballFactor = RH;
+		T1->ballFactor = EH;
+		break;
+	}
+	case EH:
+	{
+		T->ballFactor = EH;
+		T1->ballFactor = EH;
+		break;
+	}
+	case RH:
+	{
+		T->ballFactor = EH;
+		T1->ballFactor = LH;
+		break;
+	}
+	}
+	T2->ballFactor = EH;
+	T = T2;
+}
+// cân bằng lại LB
+
+// b. trường hợp 2:
+// cân bằng tại RL
+void rotateRL(AVLNode*& T)
+{
+	AVLNode* T1 = T->Right;
+	AVLNode* T2 = T1->Left;
+	T1->Left = T2->Right;
+	T2->Right = T1;
+	T->Right = T2->Left;
+	T2->Left = T;
+	switch (T2->ballFactor)
+	{
+	case RH:
+	{
+		T->ballFactor = LH;
+		T1->ballFactor = EH;
+		break;
+	}
+	case EH:
+	{
+		T->ballFactor = EH;
+		T->ballFactor = EH;
+		break;
+	}
+	case LH:
+	{
+		T->ballFactor = EH;
+		T1->ballFactor = RH;
+		break;
+	}
+	}
+	T2->ballFactor = EH;
+	T = T2;
+}
+
+// cân bằng tại RR
+void rotateRR(AVLNode*& T)
+{
+	AVLNode* T1 = T->Right;
+	T->Right = T1->Left;
+	T1->Left = T;
+	switch (T->ballFactor)
+	{
+	case RH: // cây T1 lệch phải
+	{
+		T->ballFactor = EH;
+		T1->ballFactor = EH;
+		break;
+	}
+	case EH: // cây T1 cân bằng
+	{
+		T->ballFactor = RH;
+		T1->ballFactor = LH;
+		break;
+	}
+	}
+	T = T1;
+}
+
+// cân bằng lại RB
+
+// cân bằng lại cây AVL khi bị mất cân bằng
+int balanceLeft(AVLNode*& T)
+{
+	// khi cây T lệch bên trái cần cân bằng lại
+	AVLNode* T1 = T->Left;
+	switch (T1->ballFactor)
+	{
+	case LH:
+	{
+		rotateLL(T);
+		return 2;
+	}
+	case EH:
+	{
+		rotateLL(T);
+		return 1;
+	}
+	case RH:
+	{
+		rotateLR(T);
+		return 2;
+	}
+	}
+	return 0;
+}
+
+int balanceRight(AVLNode*& T)
+{
+	// khi cây T lệch bên phải cần cân bằng lại
+	AVLNode* T1 = T->Right;
+	switch (T1->ballFactor)
+	{
+	case LH:
+	{
+		rotateRL(T);
+		return 2;
+	}
+	case EH:
+	{
+		rotateRR(T);
+		return 1;
+	}
+	case RH:
+	{
+		rotateRR(T);
+		return 2;
+	}
+	}
+	return 0; // thực hiện không thành công
+}
+
+int insertAVLNode(AVLNode*& T, TNode* p)
+{
+	if (p == NULL)
+		return -1;
+
+	if (T == NULL)
+	{
+		T = new AVLNode;
+		T->Info = p->Info;
+		T->Left = NULL;
+		T->Right = NULL;
+		T->ballFactor = EH;
+		return 2;
+	}
+
+	int Result;
+
+	if (T->Info == p->Info)
+		return 0;
+
+	if (T->Info > p->Info)
+	{
+		Result = insertAVLNode(T->Left, p);
+
+		if (Result < 2)
+			return Result;
+
+		switch (T->ballFactor)
+		{
+		case LH:
+			return balanceLeft(T);
+		case EH:
+			T->ballFactor = LH;
+			return 2;
+		case RH:
+			T->ballFactor = EH;
+			return 1;
+		}
+	}
+	else
+	{
+		Result = insertAVLNode(T->Right, p);
+
+		if (Result < 2)
+			return Result;
+
+		switch (T->ballFactor)
+		{
+		case RH:
+			return balanceRight(T);
+		case EH:
+			T->ballFactor = RH;
+			return 2;
+		case LH:
+			T->ballFactor = EH;
+			return 1;
+		}
+	}
+	return 0;
+}
