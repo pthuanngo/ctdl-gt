@@ -447,7 +447,7 @@ void main()
 		case 3:
 			cout << "Tìm Node: ";
 			cin >> value;
-			if (InsertNode(T, value) == NULL)
+			if (Input(T) == NULL)
 				cout << "Node Không Tồn Tại Trong cây\n";
 			else
 				cout << "Giá trị này là \n";
