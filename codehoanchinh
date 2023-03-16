@@ -4,15 +4,15 @@
 #include<conio.h>
 using namespace std;
 
-#define RH 1 // cÃ¢y con pháº£i cao hÆ¡n ( lá»‡ch pháº£i )
-#define EH 0 // cÃ¢y con trÃ¡i báº±ng cÃ¢y con pháº£i ( cÃ¢n báº±ng )
-#define LH -1 // cÃ¢y con trÃ¡i cao hÆ¡n ( lá»‡ch trÃ¡i
+#define RH 1 // cây con phải cao hơn ( lệch phải )
+#define EH 0 // cây con trái bằng cây con phải ( cân bằng )
+#define LH -1 // cây con trái cao hơn ( lệch trái )
 
-typedef int ItemType;
+typedef int ItemType; // khai báo ItemType có kiểu int
 
 struct AVLNode
 {
-	int balFactor; // chá»‰ sá»‘ cÃ¢n báº±ng
+	int balFactor; // chỉ số cân bằng
 	ItemType Info;
 	AVLNode* Right;
 	AVLNode* Left;
@@ -20,27 +20,32 @@ struct AVLNode
 
 typedef struct AVLNode* AVLTree;
 
-// khoi tao cay
+// khoi tao danh sach rỗng
 void CreateAVLTree(AVLTree& T)
 {
 	T = NULL;
 }
 
+// khởi tạo node
 AVLNode* CreateAVLNode(int x)
 {
 	AVLNode* p = new AVLNode;
 
-	if (!p) exit(1);
-
+	if (p == NULL)
+	{
+		printf("\n khong du bo nho de cap phat !!");
+		return NULL;
+	}
+	// gốc ( root ) // node đầu tiên
 	p->balFactor = EH;
 	p->Info = x;
-	p->Left = NULL;
-	p->Right = NULL;
+	p->Left = NULL; // chưa có cây
+	p->Right = NULL; // chưa có cây
 
 	return p;
 }
 
-void rotateLL(AVLTree& T) // quay Ä‘Æ¡n LL
+void rotateLL(AVLTree& T) // quay đơn LL
 {
 	AVLNode* T1 = T->Left;
 	T->Left = T1->Right;
@@ -59,7 +64,7 @@ void rotateLL(AVLTree& T) // quay Ä‘Æ¡n LL
 	T = T1;
 }
 
-void rotateRR(AVLTree& T) // quay Ä‘Æ¡n RR
+void rotateRR(AVLTree& T) // quay đơn RR
 {
 	AVLNode* T1 = T->Right;
 	T->Right = T1->Left;
@@ -78,7 +83,7 @@ void rotateRR(AVLTree& T) // quay Ä‘Æ¡n RR
 	T = T1;
 }
 
-void rotateLR(AVLTree& T) // quay kÃ©p LR
+void rotateLR(AVLTree& T) // quay kép LR
 {
 	AVLNode* T1 = T->Left;
 	AVLNode* T2 = T1->Right;
@@ -105,7 +110,7 @@ void rotateLR(AVLTree& T) // quay kÃ©p LR
 	T = T2;
 }
 
-void rotateRL(AVLTree& T) // quay kÃ©p RL
+void rotateRL(AVLTree& T) // quay kép RL
 {
 	AVLNode* T1 = T->Right;
 	AVLNode* T2 = T1->Left;
@@ -124,6 +129,34 @@ void rotateRL(AVLTree& T) // quay kÃ©p RL
 	}
 	T2->balFactor = EH;
 	T = T2;
+}
+
+int balanceLeft(AVLTree& T)
+{
+	// cân bằng khi cây bị lệch về bên trái
+	AVLNode* T1 = T->Left;
+
+	switch (T1->balFactor)
+	{
+	case LH: rotateLL(T); return 2;
+	case EH: rotateLL(T); return 1;
+	case RH: rotateLR(T); return 2;
+	}
+	return 0;
+}
+
+int balanceRight(AVLTree& T)
+{
+	// cân bằng khi cây bị lệch về bên phải
+	AVLNode* T1 = T->Right;
+
+	switch (T1->balFactor)
+	{
+	case LH: rotateRL(T); return 2;
+	case EH: rotateRR(T); return 1;
+	case RH: rotateRR(T); return 2;
+	}
+	return 0;
 }
 
 int balance(AVLTree& T)
@@ -153,53 +186,7 @@ int balance(AVLTree& T)
 
 	return 0;
 }
-
-int balanceLeft(AVLTree& T)
-{
-	AVLNode* T1 = T->Left;
-
-	if (T1->balFactor == LH)
-	{
-		rotateLL(T);
-		return 1;
-	}
-	else if (T1->balFactor == EH)
-	{
-		rotateLL(T);
-		return 2;
-	}
-	else if (T1->balFactor == RH)
-	{
-		rotateLR(T);
-		return 1;
-	}
-
-	return 0;
-}
-
-int balanceRight(AVLTree& T)
-{
-	AVLNode* T1 = T->Right;
-
-	if (T1->balFactor == RH)
-	{
-		rotateRR(T);
-		return 1;
-	}
-	else if (T1->balFactor == EH)
-	{
-		rotateRR(T);
-		return 2;
-	}
-	else if (T1->balFactor == LH)
-	{
-		rotateRL(T);
-		return 1;
-	}
-
-	return 0;
-}
-// thÃªm má»™t pháº§n tá»­ trÃªn cÃ¢y AVL
+// thêm một phần tử trên cây AVL
 int InsertNode(AVLTree& T, int x)
 {
 	int Res;
@@ -208,7 +195,7 @@ int InsertNode(AVLTree& T, int x)
 		//gia tri da co trong cay
 		if (T->Info == x) return 0;
 
-		//Root->x > x
+		//T->Info > x
 		//chen vao ben trai
 		if (T->Info > x)
 		{
@@ -230,7 +217,7 @@ int InsertNode(AVLTree& T, int x)
 			}
 		}
 
-		//Root->x < x
+		//T->Info < x
 		//chen vao ben phai
 		else
 		{
@@ -253,130 +240,118 @@ int InsertNode(AVLTree& T, int x)
 			}
 		}
 	}
-
 	T = CreateAVLNode(x);
 	return 2;
 }
-
 ///tim x match voi node
 //Tim node the mang
-int SearchStandFor(AVLTree& T, AVLNode*& p)
+int searchstandfor(AVLNode*& p, AVLNode*& q) // Tìm kiếm giá trị cần xóa
 {
-	int Res;
-
-	if (p->Left)
+	int ketqua;
+	if (q->Left != NULL) ///nếu con trỏ đi qua trái khác rỗng thì kết quả sẽ bằng kết quả tìm kiếm ở trái
 	{
-		Res = SearchStandFor(T, p->Left);
-
-		if (Res < 2) return Res;
-
-		switch (p->balFactor)
+		ketqua = searchstandfor(p, q->Left); // Kết quả bằng giá trị Node q bên trái
+		if (ketqua < 2)
+			return ketqua;   // Nếu giá trị tìm thấy thì trả về 1 còn không tiếp tục tìm kiếm 
+		switch (q->balFactor)  // Xét về giá trị chiều cao cây Node q
 		{
-		case LH:
-			p->balFactor = EH;
-			return 1;
-		case EH:
-			p->balFactor = RH;
+		case LH:			// Nếu Node q bên  trái lệch cao hơn thì tiếp tục tìm kiếm bên phải
+			q->balFactor = EH;
 			return 2;
-		case RH:
-			return balanceRight(T);
+		case EH:		// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái.
+			q->balFactor = RH;
+			return 1;
+		case RH:		// Nếu Node q bên phải lệnh cao hơn thì cân bằng lại node q bên phải
+			return balanceRight(q);
 		}
 	}
-	T->Info = p->Info;
-	T = p;
-	p = p->Right;
-	return 2;
-}
-
-//Xoa 1 node tren cay
-int DelNode(AVLTree& T, int x)
-{
-	int Res;
-
-	//Khong ton tai node nay tren cay
-	if (!T) return 0;
-
-	//Qua duoc if tren tuc la ton tai
-	//Root->x > x => Sang ben trai tim xoa
-	if (T->Info > x)
+	else  // Nếu dò đến lúc hết giá trị
 	{
-		Res = DelNode(T->Left, x);
-
-		//Neu co xoa thi Res = 1 hoac 2. 2 tuc thay doi chieu cao cay
-		if (Res < 2) return Res;
-
-		//Chieu cao bi thay doi
+		p->Info = q->Info; // Giá trị Node p = Giá trị Node q;
+		p = q; // Node p = Node q;
+		q = q->Right;  // Node q sẽ bằng bên phải của Node q;
+	}
+	return 2; // Tiếp tục tìm kiếm.
+}
+///xoa node
+int deleteAVLNode(AVLNode*& T, ItemType x) // Xóa giá trị cần tìm
+{
+	int ketqua;
+	if (T == NULL) // Nếu Cây T rỗng thì trả về không có giá trị
+		return 0;
+	if (T->Info > x) // Nếu Giá trị T lớn hơn giá trị x cần tìm
+	{
+		ketqua = deleteAVLNode(T->Left, x); // Tiếp tục tìm phía bên trái Node T
+		if (ketqua < 2)
+			return ketqua;  // Nếu kết quả nhỏ hơn 2 => trả về giá trị tìm thấy
 		switch (T->balFactor)
 		{
-		case LH:
+		case LH:		// Nếu Node T bên  trái lệch cao hơn thì tiếp tục tìm kiếm bên phải
 			T->balFactor = EH;
 			return 2;
-		case EH:
+		case EH:		// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái						
 			T->balFactor = RH;
 			return 1;
-		case RH:
+		case RH:		// Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên phải
 			return balanceRight(T);
+
 		}
 	}
-
-	if (T->Info < x)
+	else if (T->Info < x) // Nếu giá trị node T nhỏ hơn x 
 	{
-		Res = DelNode(T->Right, x);
-
-		if (Res < 2) return Res;
-
+		ketqua = deleteAVLNode(T->Right, x); // giá trị kết quả gán tìm kiếm tiếp bên tay phải
+		if (ketqua < 2)
+			return ketqua;	// Nếu kết quả tìm thấy sẽ dừng lại 
 		switch (T->balFactor)
 		{
-		case LH:
-			return balanceLeft(T);
-		case EH:
-			T->balFactor = LH;
-			return 1;
-		case RH:
+		case RH:	// Nếu Node T bên  phải lệch cao hơn thì tiếp tục tìm kiếm bên phải
 			T->balFactor = EH;
 			return 2;
+		case EH:	// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái	
+			T->balFactor = LH;
+			return 1;
+		case LH:	//  Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên trái 
+			return balanceLeft(T);
 		}
 	}
-	else
+	else //Nếu không tìm thấy bên phải
 	{
-		//Root->x = x
-		AVLNode* p1 = T;
-
-		if (T->Left == NULL)
+		if (T->Left == NULL) // Xét điều kiện nếu Node T bên trái bằng Rỗng
 		{
-			T = T->Right;
-			Res = 2;
+			T = T->Right; //  Node T = Node T bên phải
+			ketqua = 2; // Trả về kết quả bằng 2
 		}
-		else
+		else // Còn nếu không rỗng thì
 		{
-			if (T->Right == NULL)
+			if (T->Right == NULL) // Xét Điều kiện Node T bên phải bằng Rỗng
 			{
-				T = T->Left;
-				Res = 2;
+				T = T->Left; //  Node T = Node T bên trái
+				ketqua = 2; // Trả về kết quả bằng 2
 			}
-			else
+			else // Còn nếu ko thấy
 			{
-				Res = SearchStandFor(p1, T->Right);
-
-				if (Res < 2) return Res;
+				ketqua = searchstandfor(T, T->Right); // Xét kết quả tìm kiếm giá trị bên phải
+				if (ketqua < 2)
+					return ketqua; // Nếu kết quả tìm thấy sẽ dừng lại 
 				switch (T->balFactor)
 				{
-				case RH:
+				case RH: // Nếu Node T bên  phải lệch cao hơn thì tiếp tục tìm kiếm bên phải
 					T->balFactor = EH;
 					return 2;
-				case EH:
+				case EH: // Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái
 					T->balFactor = LH;
 					return 1;
-				case LH:
-					return balanceRight(T);
+				case LH: //  Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên trái 
+					return balanceLeft(T);
 				}
 			}
-			delete p1;
-			return Res;
 		}
+		delete T; // Xóa giá trị Node p đó;
+		return ketqua; // Trả về giá trị kết quả để xét điều kiện đã xóa đc hay chưa
 	}
-
+	return ketqua; // Trả về giá trị kết quả để xét điều kiện đã xóa đc hay chưa 
 }
+
 
 //Duyet theo muc
 void Level(AVLTree T)
@@ -399,67 +374,97 @@ void Level(AVLTree T)
 		if (p->Right) q.push(p->Right);
 	}
 }
-
-void Input(AVLTree& Root)
+void traverseNLR(AVLNode* root)
 {
-	int x;
-	do
-	{
-		cout << "x = 0 de thoat: x = ";
-		cin >> x;
-		if (x == 0) break;
-		InsertNode(Root, x);
-	} while (1);
+	if (root == NULL)
+		return;
+	printf("%4d", root->Info);
+	traverseNLR(root->Left);
+	traverseNLR(root->Right);
+}
+AVLNode* findTNode(AVLNode* root, ItemType x)
+{
+	if (root == NULL)
+		return NULL;
+	if (root->Info == x)
+		return root;
+	else if (root->Info > x)
+		return findTNode(root->Left, x);
+	else
+		return findTNode(root->Right, x);
 }
 
-void main() 
+void displayMenu()
+{
+	cout << "=== MENU ===" << endl;
+	cout << "1. Tao Node " << endl;
+	cout << "2. Xuat Node " << endl;
+	cout << "3. Xoa Node " << endl;
+	cout << "4. Tim Node" << endl;
+	cout << "5. Thoat" << endl;
+	cout << "vui long nhap lua chon (1-5): ";
+}
+
+void main()
 {
 	AVLTree T;
 	CreateAVLTree(T);
-	int luachon, value;
-	while (true) {
-		cout << "\n\n AVL TREE MENU\n";
-		cout << "1. Tạo  node\n";
-		cout << "2. Delete node\n";
-		cout << "3. Tìm node\n";
-		cout << "4. Cân Bằng Cây \n";
-		cout << "5. Thoát \n";
-		cout << "Vui Lòng Nhập lựa chọn: ";
+	int luachon;
+	do
+	{
+		displayMenu();
+		cout << "Vui long nhap lua chon" << endl;
 		cin >> luachon;
-
-		switch (luachon) {
+		switch (luachon)
+		{
 		case 1:
-			cout << "Nhập Node: ";
-			cin >> value;
-			if (InsertNode(T, value) == 1)
-				cout << "Nhập Node Thành Công\n";
-			else
-				cout << "Giá trị này đã có trong cây\n";
+		{
+			int value;
+			do
+			{
+				cout << "Nhap node: " ;
+				cin >> value;
+				if (InsertNode(T, value)!=-999)
+					cout << "nhap node thanh cong" << endl;
+			} while (value != -999);
 			break;
-		case 2:
-			cout << "Nhập giá trị để xoá: ";
-			cin >> value;
-			if (DelNode(T, value) == 1)
-				cout << "Xoá Thành Công \n";
-			else
-				cout << "Giá Trị Không Tìm Thấy \n";
-			break;
-		case 3:
-			cout << "Tìm Node: ";
-			cin >> value;
-			if (Input(T) == NULL)
-				cout << "Node Không Tồn Tại Trong cây\n";
-			else
-				cout << "Giá trị này là \n";
-			break;
-		case 4:
-			balance(T);
-			cout << "Cây đã cân bằng thành công \n";
-			break;
-		case 5:
-			exit(0);
-		default:
-			cout << "Lựa chọn không hợp lệ\n";
 		}
-	}
+		case 2:
+		{
+			cout << "Xuat cay theo tung node lan luot theo NLR la" << endl;
+			traverseNLR(T);
+			break;
+		}
+		case 3:
+		{
+			int value;
+			cout << "Nhap gia tri de xoa" << endl;
+			cin >> value;
+			if (deleteAVLNode(T, value))
+				cout << "Xoa thanh cong" << endl;
+			else
+				cout << "Gia tri chua tim thay" << endl;
+			break;
+		}
+		case 4:
+		{
+			int value;
+			cout << "Tim Node" << endl;
+			cin >> value;
+			if (findTNode(T, value) != NULL)
+				cout << "Gia tri %d tim thay cua tren cay " << value << endl;
+			else
+				cout << "Gia tri khong ton tai";
+			break;
+		}
+		case 5:
+		{
+			exit(1);
+			break;
+		}
+
+		}
+	} while (1);
+	_getch();
 }
+
