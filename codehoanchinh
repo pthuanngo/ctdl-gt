@@ -4,11 +4,11 @@
 #include<conio.h>
 using namespace std;
 
-#define RH 1 // cây con phải cao hơn ( lệch phải )
-#define EH 0 // cây con trái bằng cây con phải ( cân bằng )
-#define LH -1 // cây con trái cao hơn ( lệch trái )
+#define RH 1 // cây con ph?i cao hon ( lech phai )
+#define EH 0 // cây con trái b?ng cây con ph?i ( cân bang )
+#define LH -1 // cây con trái cao hon ( lech trái )
 
-typedef int ItemType; // khai báo ItemType có kiểu int
+typedef int ItemType; // khai báo ItemType có ki?\eu int
 
 struct AVLNode
 {
@@ -26,26 +26,26 @@ void CreateAVLTree(AVLTree& T)
 	T = NULL;
 }
 
-// khởi tạo node
+// khoi tao node
 AVLNode* CreateAVLNode(int x)
 {
 	AVLNode* p = new AVLNode;
 
 	if (p == NULL)
 	{
-		printf("\n khong du bo nho de cap phat !!");
+		cout << "\nkhong du bo nho de cap phat!\n";
 		return NULL;
 	}
-	// gốc ( root ) // node đầu tiên
+	// goc ( root ) // node dau tiên
 	p->balFactor = EH;
 	p->Info = x;
-	p->Left = NULL; // chưa có cây
-	p->Right = NULL; // chưa có cây
+	p->Left = NULL; // chua có cây
+	p->Right = NULL; // chua có cây
 
 	return p;
 }
 
-void rotateLL(AVLTree& T) // quay đơn LL
+void rotateLL(AVLTree& T) // quay don LL
 {
 	AVLNode* T1 = T->Left;
 	T->Left = T1->Right;
@@ -64,7 +64,7 @@ void rotateLL(AVLTree& T) // quay đơn LL
 	T = T1;
 }
 
-void rotateRR(AVLTree& T) // quay đơn RR
+void rotateRR(AVLTree& T) // quay don RR
 {
 	AVLNode* T1 = T->Right;
 	T->Right = T1->Left;
@@ -133,7 +133,7 @@ void rotateRL(AVLTree& T) // quay kép RL
 
 int balanceLeft(AVLTree& T)
 {
-	// cân bằng khi cây bị lệch về bên trái
+	// cân bằng khi cây bi lệch về bên trái
 	AVLNode* T1 = T->Left;
 
 	switch (T1->balFactor)
@@ -147,7 +147,7 @@ int balanceLeft(AVLTree& T)
 
 int balanceRight(AVLTree& T)
 {
-	// cân bằng khi cây bị lệch về bên phải
+	// cân bằng khi cây bi lệch về bên phải
 	AVLNode* T1 = T->Right;
 
 	switch (T1->balFactor)
@@ -245,113 +245,176 @@ int InsertNode(AVLTree& T, int x)
 }
 ///tim x match voi node
 //Tim node the mang
-int searchstandfor(AVLNode*& p, AVLNode*& q) // Tìm kiếm giá trị cần xóa
+int searchstandfor(AVLNode*& p, AVLNode*& q) // Tìm ki?m giá tr? c?n xóa
 {
 	int ketqua;
-	if (q->Left != NULL) ///nếu con trỏ đi qua trái khác rỗng thì kết quả sẽ bằng kết quả tìm kiếm ở trái
+	if (q->Left != NULL) ///n?u con tr? di qua trái khác r?ng thì k?t qu? s? b?ng k?t qu? tìm ki?m ? trái
 	{
-		ketqua = searchstandfor(p, q->Left); // Kết quả bằng giá trị Node q bên trái
+		ketqua = searchstandfor(p, q->Left); // K?t qu? b?ng giá tr? Node q bên trái
 		if (ketqua < 2)
-			return ketqua;   // Nếu giá trị tìm thấy thì trả về 1 còn không tiếp tục tìm kiếm 
-		switch (q->balFactor)  // Xét về giá trị chiều cao cây Node q
+			return ketqua;   // N?u giá tr? tìm th?y thì tr? v? 1 còn không ti?p t?c tìm ki?m 
+		switch (q->balFactor)  // Xét v? giá tr? chi?u cao cây Node q
 		{
-		case LH:			// Nếu Node q bên  trái lệch cao hơn thì tiếp tục tìm kiếm bên phải
+		case LH:			// N?u Node q bên  trái l?ch cao hon thì ti?p t?c tìm ki?m bên ph?i
 			q->balFactor = EH;
 			return 2;
-		case EH:		// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái.
+		case EH:		// N?u cây con trái b?ng v?i cây con ph?i thì d?ng tìm ki?m bên ph?i và qua tìm ki?m bên trái.
 			q->balFactor = RH;
 			return 1;
-		case RH:		// Nếu Node q bên phải lệnh cao hơn thì cân bằng lại node q bên phải
+		case RH:		// N?u Node q bên ph?i l?nh cao hon thì cân b?ng l?i node q bên ph?i
 			return balanceRight(q);
 		}
 	}
-	else  // Nếu dò đến lúc hết giá trị
+	else  // N?u dò d?n lúc h?t giá tr?
 	{
-		p->Info = q->Info; // Giá trị Node p = Giá trị Node q;
+		p->Info = q->Info; // Giá tr? Node p = Giá tr? Node q;
 		p = q; // Node p = Node q;
-		q = q->Right;  // Node q sẽ bằng bên phải của Node q;
+		q = q->Right;  // Node q s? b?ng bên ph?i c?a Node q;
 	}
-	return 2; // Tiếp tục tìm kiếm.
+	return 2; // Ti?p t?c tìm ki?m.
+}
+// tìm node trái cùng
+AVLNode* minValueNode(AVLNode* T){ 
+	if(T->Left == NULL)
+		return T;
+	return T->Left;
+}
+int getHeight(AVLNode* T) {
+    // Nếu cây rỗng, trả về 0
+    if (T == NULL) {
+        return 0;
+    }
+    // Nếu cây không rỗng, tính chiều cao của cây con trái và cây con phải
+    int leftHeight = getHeight(T->Left);
+    int rightHeight = getHeight(T->Right);
+    // Trả về chiều cao của cây con lớn nhất, cộng thêm 1 để tính chiều cao của cây hiện tại
+    return max(leftHeight, rightHeight) + 1;
+}
+
+int getBalance(AVLNode* T) { // trả về độ cân bằng
+    if (T == NULL) return 0;          // nếu nút là NULL thì trả về 0
+    return getHeight(T->Left) - getHeight(T->Right);    // trả về hiệu chiều cao cây con trái và cây con phải
 }
 ///xoa node
-int deleteAVLNode(AVLNode*& T, ItemType x) // Xóa giá trị cần tìm
+AVLNode* deleteAVLNode(AVLNode* T, ItemType x) {
+    if (T == NULL) return T; // node rỗng - không tìm thấy
+    if (x < T->Info) T->Left = deleteAVLNode(T->Left, x); // xóa ở bên trái
+    else if (x > T->Info) T->Right = deleteAVLNode(T->Right, x); // xóa bên phải
+    else { // tìm thấy node cần xóa
+        if (T->Left == NULL || T->Right == NULL) {
+            AVLNode* temp = T->Left ? T->Left : T->Right;
+            if (temp == NULL) {
+                temp = T;
+                T = NULL;
+            } else 
+				*T = *temp;
+            delete temp;
+        } else {
+            AVLNode* temp = minValueNode(T->Right); // tìm node trái cùng của node bên phải
+            T->Info = temp->Info;
+            T->Right = deleteAVLNode(T->Right, temp->Info);
+        }
+    }
+    if (T == NULL) return T;
+
+    T->balFactor = getBalance(T);
+	if(T->balFactor != 0){ // Neesu khong can bang
+		balance(T);
+	}
+    return T;
+}
+/*
+test
+1
+50
+23
+24
+70
+-999
+2
+3
+23
+2
+*/
+/*
+int deleteAVLNode(AVLNode*& T, ItemType x) // Xóa giá tr? c?n tìm
 {
 	int ketqua;
-	if (T == NULL) // Nếu Cây T rỗng thì trả về không có giá trị
+	if (T == NULL) // N?u Cây T r?ng thì tr? v? không có giá tr?
 		return 0;
-	if (T->Info > x) // Nếu Giá trị T lớn hơn giá trị x cần tìm
+	if (T->Info > x) // N?u Giá tr? T l?n hon giá tr? x c?n tìm
 	{
-		ketqua = deleteAVLNode(T->Left, x); // Tiếp tục tìm phía bên trái Node T
+		ketqua = deleteAVLNode(T->Left, x); // Ti?p t?c tìm phía bên trái Node T
 		if (ketqua < 2)
-			return ketqua;  // Nếu kết quả nhỏ hơn 2 => trả về giá trị tìm thấy
+			return ketqua;  // N?u k?t qu? nh? hon 2 => tr? v? giá tr? tìm th?y
 		switch (T->balFactor)
 		{
-		case LH:		// Nếu Node T bên  trái lệch cao hơn thì tiếp tục tìm kiếm bên phải
+		case LH:		// N?u Node T bên  trái l?ch cao hon thì ti?p t?c tìm ki?m bên ph?i
 			T->balFactor = EH;
 			return 2;
-		case EH:		// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái						
+		case EH:		// N?u cây con trái b?ng v?i cây con ph?i thì d?ng tìm ki?m bên ph?i và qua tìm ki?m bên trái						
 			T->balFactor = RH;
 			return 1;
-		case RH:		// Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên phải
+		case RH:		// N?u Node T bên ph?i l?nh cao hon thì cân b?ng l?i node T bên ph?i
 			return balanceRight(T);
 
 		}
 	}
-	else if (T->Info < x) // Nếu giá trị node T nhỏ hơn x 
+	else if (T->Info < x) // N?u giá tr? node T nh? hon x 
 	{
-		ketqua = deleteAVLNode(T->Right, x); // giá trị kết quả gán tìm kiếm tiếp bên tay phải
+		ketqua = deleteAVLNode(T->Right, x); // giá tr? k?t qu? gán tìm ki?m ti?p bên tay ph?i
 		if (ketqua < 2)
-			return ketqua;	// Nếu kết quả tìm thấy sẽ dừng lại 
+			return ketqua;	// N?u k?t qu? tìm th?y s? d?ng l?i 
 		switch (T->balFactor)
 		{
-		case RH:	// Nếu Node T bên  phải lệch cao hơn thì tiếp tục tìm kiếm bên phải
+		case RH:	// N?u Node T bên  ph?i l?ch cao hon thì ti?p t?c tìm ki?m bên ph?i
 			T->balFactor = EH;
 			return 2;
-		case EH:	// Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái	
+		case EH:	// N?u cây con trái b?ng v?i cây con ph?i thì d?ng tìm ki?m bên ph?i và qua tìm ki?m bên trái	
 			T->balFactor = LH;
 			return 1;
-		case LH:	//  Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên trái 
+		case LH:	//  N?u Node T bên ph?i l?nh cao hon thì cân b?ng l?i node T bên trái 
 			return balanceLeft(T);
 		}
 	}
-	else //Nếu không tìm thấy bên phải
+	else //Tim thay
 	{
-		if (T->Left == NULL) // Xét điều kiện nếu Node T bên trái bằng Rỗng
+		if (T->Left == NULL) // Xét di?u ki?n n?u Node T bên trái b?ng R?ng
 		{
-			T = T->Right; //  Node T = Node T bên phải
-			ketqua = 2; // Trả về kết quả bằng 2
+			T = T->Right; //  Node T = Node T bên ph?i
+			ketqua = 2; // Tr? v? k?t qu? b?ng 2
 		}
-		else // Còn nếu không rỗng thì
+		else // Còn n?u không r?ng thì
 		{
-			if (T->Right == NULL) // Xét Điều kiện Node T bên phải bằng Rỗng
+			if (T->Right == NULL) // Xét Ði?u ki?n Node T bên ph?i b?ng R?ng
 			{
 				T = T->Left; //  Node T = Node T bên trái
-				ketqua = 2; // Trả về kết quả bằng 2
+				ketqua = 2; // Tr? v? k?t qu? b?ng 2
 			}
-			else // Còn nếu ko thấy
+			else // Còn n?u ko th?y
 			{
-				ketqua = searchstandfor(T, T->Right); // Xét kết quả tìm kiếm giá trị bên phải
+				ketqua = searchstandfor(T, T->Right); // Xét k?t qu? tìm ki?m giá tr? bên ph?i
 				if (ketqua < 2)
-					return ketqua; // Nếu kết quả tìm thấy sẽ dừng lại 
+					return ketqua; // N?u k?t qu? tìm th?y s? d?ng l?i 
 				switch (T->balFactor)
 				{
-				case RH: // Nếu Node T bên  phải lệch cao hơn thì tiếp tục tìm kiếm bên phải
+				case RH: // N?u Node T bên  ph?i l?ch cao hon thì ti?p t?c tìm ki?m bên ph?i
 					T->balFactor = EH;
 					return 2;
-				case EH: // Nếu cây con trái bằng với cây con phải thì dừng tìm kiếm bên phải và qua tìm kiếm bên trái
+				case EH: // N?u cây con trái b?ng v?i cây con ph?i thì d?ng tìm ki?m bên ph?i và qua tìm ki?m bên trái
 					T->balFactor = LH;
 					return 1;
-				case LH: //  Nếu Node T bên phải lệnh cao hơn thì cân bằng lại node T bên trái 
+				case LH: //  N?u Node T bên ph?i l?nh cao hon thì cân b?ng l?i node T bên trái 
 					return balanceLeft(T);
 				}
 			}
 		}
-		delete T; // Xóa giá trị Node p đó;
-		return ketqua; // Trả về giá trị kết quả để xét điều kiện đã xóa đc hay chưa
+		delete T; // Xóa giá tr? Node p dó;
+		return ketqua; // Tr? v? giá tr? k?t qu? d? xét di?u ki?n dã xóa dc hay chua
 	}
-	return ketqua; // Trả về giá trị kết quả để xét điều kiện đã xóa đc hay chưa 
+	return ketqua; // Tr? v? giá tr? k?t qu? d? xét di?u ki?n dã xóa dc hay chua 
 }
-
+*/
 
 //Duyet theo muc
 void Level(AVLTree T)
@@ -378,7 +441,7 @@ void traverseNLR(AVLNode* root)
 {
 	if (root == NULL)
 		return;
-	printf("%4d", root->Info);
+	cout << root->Info << " ";
 	traverseNLR(root->Left);
 	traverseNLR(root->Right);
 }
@@ -396,7 +459,7 @@ AVLNode* findTNode(AVLNode* root, ItemType x)
 
 void displayMenu()
 {
-	cout << "=== MENU ===" << endl;
+	cout << "\n=== MENU ===" << endl;
 	cout << "1. Tao Node " << endl;
 	cout << "2. Xuat Node " << endl;
 	cout << "3. Xoa Node " << endl;
@@ -405,7 +468,7 @@ void displayMenu()
 	cout << "vui long nhap lua chon (1-5): ";
 }
 
-void main()
+int main()
 {
 	AVLTree T;
 	CreateAVLTree(T);
@@ -420,18 +483,20 @@ void main()
 		case 1:
 		{
 			int value;
-			do
-			{
-				cout << "Nhap node: " ;
+			char c;
+			do{
+				cout << "Nhap node: ";
 				cin >> value;
-				if (InsertNode(T, value)!=-999)
-					cout << "nhap node thanh cong" << endl;
-			} while (value != -999);
+				InsertNode(T, value);
+				cout << "Ban muon nhap tiep khong(y/n)?\n";
+				cout << "Lua chon: ";
+				cin >> c;
+			} while (c != 'n');
 			break;
 		}
 		case 2:
 		{
-			cout << "Xuat cay theo tung node lan luot theo NLR la" << endl;
+			cout << "Xuat cay theo tung node lan luot theo NLR la:" << endl;
 			traverseNLR(T);
 			break;
 		}
@@ -452,9 +517,9 @@ void main()
 			cout << "Tim Node" << endl;
 			cin >> value;
 			if (findTNode(T, value) != NULL)
-				cout << "Gia tri %d tim thay cua tren cay " << value << endl;
+				cout << "Gia tri " <<value << " tim thay cua tren cay \n";
 			else
-				cout << "Gia tri khong ton tai";
+				cout << "Gia tri khong ton tai\n";
 			break;
 		}
 		case 5:
@@ -462,9 +527,10 @@ void main()
 			exit(1);
 			break;
 		}
-
+		default:{
+			cout << "Lua chon khong hop le!\n";
+		}
 		}
 	} while (1);
-	_getch();
+	//_getch();
 }
-
