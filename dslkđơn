@@ -1,8 +1,5 @@
 #include<iostream>
 using namespace std;
-
-
-
 // ========== KHAI BÁO CẤU TRÚC 1 CÁI NODE ==========
 struct node
 {
