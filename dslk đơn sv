@@ -1,0 +1,303 @@
+#include<iostream>
+#include<string>
+#include<fstream>
+using namespace std;
+
+// khai báo cấu trúc ngày tháng năm sinh
+struct date
+{
+	int ngay;
+	int thang;
+	int nam;
+};
+typedef struct date DATE;
+
+// hàm đọc dữ liệu ngày tháng năm từ file
+void Doc_Ngay_Thang_Nam(ifstream& filein, DATE& date)
+{
+	filein >> date.ngay;
+	filein.seekg(1, 1); // dịch sang phải 1 byte để bỏ qua kí tự '/'
+	filein >> date.thang;
+	filein.seekg(1, 1); // dịch sang phải 1 byte để bỏ qua kí tự '/'
+	filein >> date.nam;
+}
+
+// khai báo cấu trúc sinh viên
+struct sinhvien
+{
+	string hoten;
+	string masv;
+	DATE ngaysinh;
+	float dtb;
+};
+typedef struct sinhvien SINHVIEN;
+
+// khai báo cấu trúc 1 cái node sinh viên
+struct node
+{
+	SINHVIEN data; // dữ liệu của node
+	struct node* pNext; // con trỏ dùng để liên kết giữa các cái node với nhau
+};
+typedef struct node NODE;
+
+// ========== KHAI BÁO CẤU TRÚC DANH SÁCH LIÊN KẾT ĐƠN CÁC SINH VIÊN =========
+
+struct list
+{
+	NODE* pHead;
+	NODE* pTail;
+};
+typedef struct list LIST;
+
+// hàm khởi tạo danh sách liên kết đơn các sinh viên
+void KhoiTaoDanhSach(LIST& l)
+{
+	l.pHead = NULL;
+	l.pTail = NULL;
+}
+
+// hàm khởi tạo 1 cái node để chuẩn bị thêm vào danh sách
+NODE* KhoiTaoNode(SINHVIEN x)
+{
+	NODE* p = new NODE;
+	if (p == NULL)
+	{
+		cout << "\nCap phat that bai !";
+		return NULL;
+	}
+	p->data = x; // đưa dữ liệu của biến sinh vien x vào data của cái Node p
+	p->pNext = NULL; // khởi tạo node p nhưng node p chưa có liên kết đến node nào hết
+	return p;
+}
+
+// hàm thêm 1 cái node sinh viên vào đầu danh sách
+void ThemDau(LIST& l, NODE* p)
+{
+	// nếu danh sách rỗng
+	if (l.pHead == NULL)
+	{
+		l.pHead = l.pTail = p; // node p thêm vào cũng chính là node đầu và node cuối
+	}
+	else
+	{
+		p->pNext = l.pHead; // cho con trỏ p trỏ đến pHead
+		l.pHead = p; // cập nhật lại pHead là node p
+	}
+}
+
+// hàm thêm 1 cái node sinh viên vào cuối danh sách
+void ThemCuoi(LIST& l, NODE* p)
+{
+	// nếu danh sách rỗng
+	if (l.pHead == NULL)
+	{
+		l.pHead = l.pTail = p; // node p thêm vào cũng chính là node đầu và node cuối
+	}
+	else
+	{
+		l.pTail->pNext = p; // cho con trỏ của pTail trỏ đến node p
+		l.pTail = p; // cập nhật lại pTail chính là node p
+	}
+}
+
+// hàm đọc dữ liệu 1 sinh viên từ file
+void Doc_Thong_Tin_1_Sinh_Vien(ifstream& filein, SINHVIEN& sv)
+{
+	// đọc họ tên sinh viên
+	getline(filein, sv.hoten, ','); // đọc đến dấu ',' thì dừng
+	filein.seekg(1, 1); // tại vị trí hiện tại dịch sang phải 1 byte để bỏ khoảng trắng ' '
+	// đọc mã sinh viên
+	getline(filein, sv.masv, ','); // đọc đến dấu ',' thì dừng
+	filein.seekg(1, 1); // tại vị trí hiện tại dịch sang phải 1 byte để bỏ khoảng trắng ' '
+	// đọc thông tin ngày tháng năm sinh
+	Doc_Ngay_Thang_Nam(filein, sv.ngaysinh);
+	filein.seekg(2, 1); // tại vị trí hiện tại dịch sang phải 2 byte để bỏ dấu phẩy và khoảng trắng ' '
+	// đọc điểm trung bình
+	filein >> sv.dtb;
+
+	// tạo biến tạm để đọc cái kí tự xuống dòng ở cuối dòng
+	string temp;
+	getline(filein, temp);
+}
+
+
+// hàm đọc danh sách sinh viên từ file
+void Doc_Danh_Sach_Sinh_Vien(ifstream& filein, LIST& l)
+{
+	// đọc đến cuối file thì dừng
+	while (!filein.eof())
+	{
+		// BƯỚC 1: ĐỌC THÔNG TIN SINH VIÊN
+		SINHVIEN sv;
+		Doc_Thong_Tin_1_Sinh_Vien(filein, sv);
+		// BƯỚC 2: KHỞI TẠO 1 CÁI NODE SINH VIÊN
+		NODE* p = KhoiTaoNode(sv);
+		// BƯỚC 3: THÊM SINH VIÊN(thêm node p) VÀO DANH SÁCH LIÊN KẾT ĐƠN CÁC SINH VIÊN
+		ThemCuoi(l, p);
+	}
+}
+
+// hàm giải phóng vùng nhớ cho danh sách liên kết đơn
+void Giai_Phong_Vung_Nho(LIST& l)
+{
+	NODE* p = NULL;
+	while (l.pHead != NULL)
+	{
+		p = l.pHead;
+		l.pHead = l.pHead->pNext;
+		delete p;
+	}
+}
+
+// hàm ghi thông tin 1 sinh viên vào file
+void Ghi_Thong_Tin_1_Sinh_Vien(ofstream& fileout, SINHVIEN sv)
+{
+	fileout << sv.hoten << ", ";
+	fileout << sv.masv << ", ";
+	fileout << sv.ngaysinh.ngay << "/" << sv.ngaysinh.thang << "/" << sv.ngaysinh.nam << ", ";
+	fileout << sv.dtb;
+}
+
+
+// hàm hoán vị 2 cái data của 2 cái node cho nhau
+void Hoan_Vi(SINHVIEN& x, SINHVIEN& y)
+{
+	SINHVIEN tam = x;
+	x = y;
+	y = tam;
+}
+
+// hàm sắp xếp tăng dần theo điểm trung bình
+void Sap_Xep_Tang_Dan(LIST& l)
+{
+	for (NODE* k = l.pHead; k != NULL; k = k->pNext)
+	{
+		for (NODE* h = k->pNext; h != NULL; h = h->pNext)
+		{
+			if (k->data.dtb > h->data.dtb)
+			{
+				Hoan_Vi(k->data, h->data); // hoán vị 2 cái data của 2 cái node
+			}
+		}
+	}
+}
+// Sắp xếp danh sách sinh viên tăng dần theo điểm trung bình - sau đó lưu vào file SAPXEPDIEMMAX.TXT
+void Luu_File_Sap_Xep_Tang_Dan_Diem_Trung_Binh(LIST l)
+{
+	ofstream fileout;
+	fileout.open("SAPXEPDIEMMAX.TXT", ios::out);
+	//BƯỚC 1: Gọi lại hàm sắp xếp để sắp xếp danh sách sinh viên tăng dần theo điểm trung bình
+	Sap_Xep_Tang_Dan(l);
+	// BƯỚC 2: Dùng vòng lặp để lưu tất cả thông tin sinh vien vào file
+	for (NODE* k = l.pHead; k != NULL; k = k->pNext)
+	{
+		Ghi_Thong_Tin_1_Sinh_Vien(fileout, k->data);
+		fileout << endl;
+	}
+	fileout.close();
+}
+
+
+// hàm in danh sách sinh viên có điểm trung bình max vào file
+void Ghi_File_Sinh_Vien_Diem_Trung_Binh_Max(LIST l)
+{
+
+	float max = l.pHead->data.dtb; // giả sử sinh viên thứ nhất có điểm trung bình cao nhất
+	// BƯỚC 1: Tìm ra điểm trung bình cao nhất
+	for (NODE* k = l.pHead->pNext; k != NULL; k = k->pNext)
+	{
+		if (max < k->data.dtb)
+		{
+			max = k->data.dtb;
+		}
+	}
+
+	ofstream fileout;
+	fileout.open("DIEMTRUNGBINHMAX.TXT", ios::out);
+	// BƯỚC 2: Tìm các sinh viên có điểm trung bình cao nhất và ghi vào file
+	for (NODE* k = l.pHead; k != NULL; k = k->pNext)
+	{
+		if (max == k->data.dtb)
+		{
+			Ghi_Thong_Tin_1_Sinh_Vien(fileout, k->data);
+			fileout << endl;
+		}
+	}
+
+	fileout.close();
+}
+
+
+// hàm tách tên trong chuỗi họ tên
+string Ten_Sinh_Vien(string tensv)
+{
+	// BƯỚC 1: Duyệt họ tên sinh viên từ cuối chuỗi về đầu chuỗi - nếu gặp kí tự khoảng trắng thì dừng và lấy cái vị trí tiếp theo để cắt chuỗi
+	int length = tensv.length();
+	int i;
+	for (i = length - 1; i >= 0; i--)
+	{
+		if (tensv[i] == ' ')
+		{
+			break;
+		}
+	}
+	// BƯỚC 2: cắt chuỗi tại vị trí i + 1 về đến cuối chuỗi
+	return tensv.substr(i + 1);
+
+}
+
+
+// hàm xuất để test dữ liệu
+void Xuat(SINHVIEN sv)
+{
+	cout << "\nHo ten:" << sv.hoten;
+	cout << "\nMa sinh vien:" << sv.masv;
+	cout << "\nNgay sinh:" << sv.ngaysinh.ngay << "/" << sv.ngaysinh.thang << "/" << sv.ngaysinh.nam;
+	cout << "\nDiem trung binh:" << sv.dtb;
+}
+
+// hàm xuất danh sách sinh viên
+void Xuat_Danh_Sach_Sinh_Vien(LIST l)
+{
+	int dem = 1;
+	for (NODE* k = l.pHead; k != NULL; k = k->pNext)
+	{
+		cout << "\n\n\t\t SINH VIEN THU " << dem++;
+		Xuat(k->data);
+	}
+}
+// hàm tìm kiếm sinh viên dựa vào tên sinh viên
+void Tim_Kiem_Sinh_Vien_Dua_Vao_Ten(LIST l, string tensv)
+{
+	for (NODE* k = l.pHead; k != NULL; k = k->pNext)
+	{
+		// BƯỚC 1: Cắt cái tên trong chuỗi họ tên của sinh viên
+		string ten = Ten_Sinh_Vien(k->data.hoten);
+		if (_stricmp((char*)ten.c_str(), (char*)tensv.c_str()) == 0)
+		{
+			Xuat(k->data);
+			cout << endl << endl;
+		}
+	}
+}
+
+int main()
+{
+	LIST l;
+	KhoiTaoDanhSach(l);
+	// mở file lên
+	ifstream filein;
+	filein.open("SINHVIEN.TXT", ios::in);
+	Doc_Danh_Sach_Sinh_Vien(filein, l);
+	Xuat_Danh_Sach_Sinh_Vien(l);
+	//Luu_File_Sap_Xep_Tang_Dan_Diem_Trung_Binh(l);
+	Ghi_File_Sinh_Vien_Diem_Trung_Binh_Max(l);
+	string tensv;
+	cout << "\nNhap ho ten sinh vien can tim kiem: ";
+	getline(cin, tensv);
+	Tim_Kiem_Sinh_Vien_Dua_Vao_Ten(l, tensv);
+	Giai_Phong_Vung_Nho(l);
+	filein.close();
+	system("pause");
+	return 0;
+}
