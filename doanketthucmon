@@ -1,0 +1,200 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+struct SACH {
+    string maSach;
+    string tenSach;
+    string tacGia;
+};
+
+vector<SACH> sach;
+
+void themSach() {
+    SACH s;
+    cout << "Nhap ma sach: ";
+    getline(cin, s.maSach);
+    cout << "Nhap ten sach: ";
+    getline(cin, s.tenSach);
+    cout << "Nhap tac gia: ";
+    getline(cin, s.tacGia);
+    sach.push_back(s);
+    cout << "Them sach thanh cong!" << endl;
+}
+
+void timSach() {
+    string maSach;
+    cout << "Nhap ma sach can tim: ";
+    getline(cin, maSach);
+    for (int i = 0; i < sach.size(); i++) {
+        if (sach[i].maSach == maSach) {
+            cout << "Ma sach: " << sach[i].maSach << endl;
+            cout << "Ten sach: " << sach[i].tenSach << endl;
+            cout << "Tac gia: " << sach[i].tacGia << endl;
+            return;
+        }
+    }
+    cout << "Khong tim thay sach co ma so " << maSach << "!" << endl;
+}
+
+void xoaSach() {
+    string maSach;
+    cout << "Nhap ma sach can xoa: ";
+    getline(cin, maSach);
+    for (int i = 0; i < sach.size(); i++) {
+        if (sach[i].maSach == maSach) {
+            sach.erase(sach.begin() + i);
+            cout << "Xoa sach thanh cong!" << endl;
+            return;
+        }
+    }
+    cout << "Khong tim thay sach co ma so " << maSach << "!" << endl;
+}
+
+void hienThiDanhSach() {
+    cout << "Danh sach sach trong thu vien: " << endl;
+    for (int i = 0; i < sach.size(); i++) {
+        cout << "Ma sach: " << sach[i].maSach << endl;
+        cout << "Ten sach: " << sach[i].tenSach << endl;
+        cout << "Tac gia: " << sach[i].tacGia << endl;
+        cout << endl;
+    }
+}
+
+void themSachVaoDau() 
+{
+    SACH s;
+    cout << "Nhap ma sach: ";
+    getline(cin, s.maSach);
+    cout << "Nhap ten sach: ";
+    getline(cin, s.tenSach);
+    cout << "Nhap tac gia: ";
+    getline(cin, s.tacGia);
+    sach.insert(sach.begin(), s);
+    cout << "Them sach thanh cong!" << endl;
+}
+
+void themSachVaoCuoi() {
+    SACH s;
+    cout << "Nhap ma sach: ";
+    getline(cin, s.maSach);
+    cout << "Nhap ten sach: ";
+    getline(cin, s.tenSach);
+    cout << "Nhap tac gia: ";
+    getline(cin, s.tacGia);
+    sach.push_back(s);
+    cout << "Them sach thanh cong!" << endl;
+}
+
+// Hàm xóa sách ở đầu danh sách
+void xoaSachDau() {
+    if (sach.empty()) 
+    {
+        cout << "Danh sach sach trong thu vien rong!" << endl;
+        return;
+    }
+    cout << "Xoa sach dau danh sach!" << endl;
+    sach.erase(sach.begin());
+}
+
+// Hàm truy cập sách theo mã sách
+void truyCapSach() {
+    string maSach;
+    cout << "Nhap ma sach can truy cap: ";
+    getline(cin, maSach);
+    for (int i = 0; i < sach.size(); i++) {
+        if (sach[i].maSach == maSach) {
+            cout << "Thong tin sach co ma so " << maSach << ":" << endl;
+            cout << "Ma sach: " << sach[i].maSach << endl;
+            cout << "Ten sach: " << sach[i].tenSach << endl;
+            cout << "Tac gia: " << sach[i].tacGia << endl;
+            return;
+        }
+    }
+    cout << "Khong tim thay sach co ma so " << maSach << "!" << endl;
+}
+
+// Hàm sắp xếp danh sách theo thứ tự tăng dần của tên sách
+void sapXepDanhSach() {
+    sort(sach.begin(), sach.end(), [](SACH a, SACH b) {
+        return a.tenSach < b.tenSach;
+        });
+    cout << "Sap xep danh sach sach theo thu tu ten sach thanh cong!" << endl;
+}
+
+// Hàm đảo ngược thứ tự các sách trong danh sách
+void daoNguocDanhSach() 
+{
+    reverse(sach.begin(), sach.end());
+    cout << "Dao nguoc danh sach sach thanh cong!" << endl;
+}
+
+int main() {
+    int choice;
+    while (true)
+    {
+        cout << "===============================" << endl;
+        cout << "Chuong trinh quan ly sach thu vien" << endl;
+        cout << "1. Them sach moi" << endl;
+        cout << "2. Tim kiem sach" << endl;
+        cout << "3. Xoa sach" << endl;
+        cout << "4. Hien thi danh sach sach" << endl;
+        cout << "5. Them sach vao cuoi danh sach" << endl;
+        cout << "6. Them sach vao dau danh sach" << endl;
+        cout << "7. Xoa sach o cuoi danh sach" << endl;
+        cout << "8. Xoa sach o dau danh sach" << endl;
+        cout << "9. Truy cap sach theo ma sach" << endl;
+        cout << "10. Sap xep danh sach theo thu tu" << endl;
+        cout << "11. Dao nguoc danh sach sach" << endl;
+        cout << "0. Thoat" << endl;
+        cout << "Nhap lua chon cua ban: ";
+        cin >> choice;
+        cin.ignore();
+        switch (choice)
+        {
+        case 1:
+            themSach();
+            break;
+        case 2:
+            timSach();
+            break;
+        case 3:
+            xoaSach();
+            break;
+        case 4:
+            hienThiDanhSach();
+            break;
+        case 5:
+            themSachVaoCuoi();
+            break;
+        case 6:
+            themSachVaoDau();
+            break;
+        case 7:
+            xoaSachDau();
+            break;
+        case 8:
+            xoaSachDau();
+            break;
+        case 9:
+            truyCapSach();
+            break;
+        case 10:
+            sapXepDanhSach();
+            break;
+        case 11:
+            daoNguocDanhSach();
+            break;
+        case 0:
+            cout << "Thoat chuong trinh..." << endl;
+            return 0;
+        default:
+            cout << "Lua chon khong hop le!" << endl;
+            break;
+        }
+    }
+    return 0;
+}
