@@ -1,0 +1,21 @@
+                                     DANH SACH HIEN CO
+STT       Ma sach   Ten sach                      Ten tac gia         Nha xuat ban        Nam xuat ban   The loai            
+1         AAC01     Thoi gian                     Tran Thi B          NXB Van Hoa         1999           Cuoc song           
+2         AAC02     Tien                          Tran Thi B          NXB Van Hoa         1989           Cuoc song           
+3         AAC03     Ban doi                       Tran Thi B          NXB Van Hoa         2005           Cuoc song           
+4         AAC04     Chung ta                      Tran Thi B          NXB Ha Noi          2008           Cuoc song           
+5         AAC05     Tu phuong                     Tran Thi B          NXB Ha Noi          2010           Cuoc song           
+6         ABA01     Doremon                       Fujiko Fujio        NXB Kim Dong        1988           Giai tri            
+7         ABA02     Doremon                       Fujiko Fujio        NXB Kim Dong        1988           Giai tri            
+8         ABA03     Doremon                       Fujiko Fujio        NXB Kim Dong        1988           Giai tri            
+9         ABA04     Doremon                       Fujiko Fujio        NXB Kim Dong        1988           Giai tri            
+10        ABA05     Doremon                       Fujiko Fujio        NXB Kim Dong        1988           Giai tri            
+11        AAB02     Nguyen ly thong ke            Tran Thi B          NXB Giao Duc        1976           Giao duc            
+12        AAB03     Giai tich 1                   Nguyen Thi D        NXB DHQG            1976           Giao duc            
+13        AAB04     Giai tich 2                   Nguyen Thi D        NXB DHQG            1977           Giao duc            
+14        AAB05     Giai tich 3                   Luong The E         NXB KHKT            1988           Giao duc            
+15        AAB06     Giai tich 3                   Luong Van F         NXB DHQG            1980           Giao duc            
+16        AAA01     Toan cao cap 1                Nguyen Van A        NXB Giao Duc        1998           Khoa hoc            
+17        AAA02     Toan cao cap 2                Nguyen Van A        NXB Giao Duc        1998           Khoa hoc            
+18        AAA03     Toan cao cap 3                Nguyen Van A        NXB Giao Duc        1998           Khoa hoc            
+19        AAB01     Xac suat thong ke             Tran Thi B          NXB Giao Duc        1977           Khoa hoc            
